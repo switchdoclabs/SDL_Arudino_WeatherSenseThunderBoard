@@ -1,7 +1,7 @@
 Arduino Drivers for the SwitchDoc Labs WeatherSense Solar Powered ThunderBoard Lightning Detector 
 SwitchDoc Labs, February 2021<BR>
 
-Version 1 - Initial Release - February 2021<BR>
+Version 1 - Initial Release - March 2021<BR>
 
 Installation
 

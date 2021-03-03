@@ -128,7 +128,7 @@ byte AuxA;
 
 // AuxA has state information
 // coded in the long integer
-// 00000000 00000000 00000000 000000AB
+// 00000000 00000000 00000000 00000CAB
 
 // A = 1, IN3221 (Solar) Present, 0 not present
 // B = 1, AS3935 Present, 0 not present
@@ -308,7 +308,7 @@ int buildProtocolMessage()
 
 
 
-  byteBuffer[bufferCount] = AuxA || SOFTWAREVERSION << 4; // Aux + Software Version
+  byteBuffer[bufferCount] = AuxA | (SOFTWAREVERSION << 4); // Aux + Software Version
   bufferCount++;
 
 
@@ -419,7 +419,12 @@ unsigned long wakeCount;
 
 void setup()
 {
+
+
+
   Serial.begin(115200);    // TXDEBUGging only
+  // Pat the WatchDog
+  ResetWatchdog();
   wakeCount = 0;
 
   AuxA = 0x00;
@@ -563,10 +568,6 @@ void setup()
   }
 
 
-
-
-
-
 }
 
 
@@ -615,10 +616,11 @@ void loop()
 
     }
 
+
     if (BatteryVoltage < 2.80)
-      AuxA = AuxA | 0x40;
+      AuxA = AuxA | 0x04;
     else
-      AuxA = AuxA & 0xFD;
+      AuxA = AuxA & 0xFB;
 
 
 
@@ -753,7 +755,7 @@ void loop()
     if (((wakeCount % 20) == 0) || (irqSource != 0))
     {
 
-      if (AuxA & 0x040)   // If the battery vboltage is less than 2.80V, then Lightning Detector is flaky
+      if ((AuxA & 0x04)  == false)   // If the battery vboltage is less than 2.80V, then Lightning Detector is flaky
       {
         // Now send the message
 
@@ -837,6 +839,8 @@ void loop()
     LastInterruptResult = irqSource;
 
   }
+  // Pat the WatchDog
+  ResetWatchdog();
 
   if (wakeState != REBOOT)
     wakeState = SLEEP_INTERRUPT;
